@@ -65,6 +65,32 @@ paletkaAI_prost.y = PALETKA_AI_POZ[1]
 PREDKOSC_AI = 5
 
 
+
+# komunikaty tekstowe ###################################################
+# zmienne przechowujące punkty i funkcje wyświetlające punkty
+PKT_1 = '0'
+PKT_AI = '0'
+fontObj = pygame.font.Font('freesansbold.ttf', 64)  # czcionka komunikatów
+
+
+def drukuj_punkty1():
+    tekst1 = fontObj.render(PKT_1, True, (0, 0, 0))
+    tekst_prost1 = tekst1.get_rect()
+    tekst_prost1.center = (OKNOGRY_SZER / 2, OKNOGRY_WYS * 0.75)
+    oknogry.blit(tekst1, tekst_prost1)
+
+
+def drukuj_punktyAI():
+    tekstAI = fontObj.render(PKT_AI, True, (0, 0, 0))
+    tekst_prostAI = tekstAI.get_rect()
+    tekst_prostAI.center = (OKNOGRY_SZER / 2, OKNOGRY_WYS / 4)
+    oknogry.blit(tekstAI, tekst_prostAI)
+
+
+
+# powtarzalność klawiszy (delay, interval)
+pygame.key.set_repeat(50, 25)
+
 while True:
     # obsługa zdarzeń generowanych przez gracza
     for event in pygame.event.get():
@@ -87,6 +113,19 @@ while True:
                 przesuniecie = 0
             # zaktualizuj położenie paletki w poziomie
             paletka1_prost.x = przesuniecie
+
+
+        # przechwyć naciśnięcia klawiszy kursora
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                paletka1_prost.x -= 5
+                if paletka1_prost.x < 0:
+                    paletka1_prost.x = 0
+            if event.key == pygame.K_RIGHT:
+                paletka1_prost.x += 5
+                if paletka1_prost.x > OKNOGRY_SZER - PALETKA_SZER:
+                    paletka1_prost.x = OKNOGRY_SZER - PALETKA_SZER
+
         # ruch piłki ########################################################
     # przesuń piłkę po obsłużeniu zdarzeń
     pilka_prost.move_ip(P_PREDKOSC_X, P_PREDKOSC_Y)
@@ -102,10 +141,12 @@ while True:
         '''P_PREDKOSC_Y *= -1  # odwracamy kierunek ruchu pionowego piłki'''
         pilka_prost.x = OKNOGRY_SZER / 2  # więc startuję ze środka
         pilka_prost.y = OKNOGRY_WYS / 2
+        PKT_1 = str(int(PKT_1) + 1)
 
     if pilka_prost.bottom >= OKNOGRY_WYS:  # piłka uciekła dołem
         pilka_prost.x = OKNOGRY_SZER / 2  # więc startuję ze środka
         pilka_prost.y = OKNOGRY_WYS / 2
+        PKT_AI = str(int(PKT_AI) + 1)
 
 
     # AI (jak gra komputer) #############################################
@@ -129,6 +170,9 @@ while True:
         pilka_prost.bottom = paletka1_prost.top
     # rysowanie obiektów
     oknogry.fill(LT_BLUE)  # kolor okna gry
+    drukuj_punkty1()  # wyświetl punkty gracza
+    drukuj_punktyAI()  # wyświetl punkty AI
+
 
 
     # narysuj w oknie gry paletki
